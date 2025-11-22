@@ -1,0 +1,17 @@
+build/
+*.o
+*.a
+*.so
+curlsync
+
+downloads/*
+!downloads/.gitkeep
+
+logs/*
+!logs/.gitkeep
+*.log
+
+config/urls.conf
+
+tests/build/
+tests/*.o

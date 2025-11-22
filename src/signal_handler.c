@@ -2,6 +2,7 @@
 #include "logger.h"
 #include <signal.h>
 #include <stdbool.h>
+#include <string.h>
 
 static volatile sig_atomic_t shutdown_requested = 0;
 static volatile sig_atomic_t pause_toggle_requested = 0;
@@ -30,13 +31,13 @@ static void sigterm_handler(int signum) {
 void init_signal_handlers(Config *config) {
     global_config = config;
 
-    struct sigaction as_int;
+    struct sigaction sa_int;
     sa_int.sa_handler = sigint_handler;
     sigemptyset(&sa_int.sa_mask);
     sa_int.sa_flags = 0;
     sigaction(SIGINT, &sa_int, NULL);
 
-    struct sigaction as_term;
+    struct sigaction sa_term;
     sa_term.sa_handler = sigterm_handler;
     sigemptyset(&sa_term.sa_mask);
     sa_term.sa_flags = 0;
@@ -52,5 +53,5 @@ bool should_toggle_pause(void) {
 }
 
 void reset_pause_toggle(void) {
-    pause_toggle_requested =;
+    pause_toggle_requested = 0;
 }

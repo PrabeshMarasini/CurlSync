@@ -1,5 +1,5 @@
 #include "config_parser.h"
-#include "logger"
+#include "logger.h"
 #include "stdio.h"
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +10,7 @@ void init_config(Config *config) {
     config->rate_limit_kbps = 0;
     config->verify_checksums = true;
     config->resume_downloads = true;
-    strcpy(config->log_file, "logs/cyrlsync.log");
+    strcpy(config->log_file, "logs/curlsync.log");
     strcpy(config->download_dir, "downloads");
     config->download_count = 0;
     config->paused = false;
@@ -33,7 +33,7 @@ int parse_config_file(const char *filename, Config *config) {
         return ERROR_CONFIG_PARSE;
     }
 
-    char lone[4096];
+    char line[4096];
     int line_num = 0;
 
     while (fgets(line, sizeof(line), file)) {
@@ -50,11 +50,11 @@ int parse_config_file(const char *filename, Config *config) {
         } else if (strncmp(trimmed, "rate_limit=", 11) == 0) {
             config->rate_limit_kbps = atoi(trimmed + 11);
         } else if (strncmp(trimmed, "verify_checksums=", 17) == 0) {
-            config->verify_checksums = (strncmp(trimmed + 17, "true") == 0);
+            config->verify_checksums = (strncmp(trimmed + 17, "true", 4) == 0);
         } else if (strncmp(trimmed, "resume=", 7) == 0) {
-            config->resume_downloads = (strncmp(trimmed + 7, "true") == 0);
+            config->resume_downloads = (strncmp(trimmed + 7, "true", 4) == 0);
         } else if (strncmp(trimmed, "log_file=", 9) == 0) {
-            config->(log_file, trimmed + 9, MAX_PATH_LEN - 1);
+            strncpy(config->log_file, trimmed + 9, MAX_PATH_LEN - 1);
         } else if (strncmp(trimmed, "download_dir=", 13) == 0) {
             strncpy(config->download_dir, trimmed + 13, MAX_PATH_LEN - 1);
         } else if (strncmp(trimmed, "url=", 4) == 0) {
@@ -73,7 +73,7 @@ int parse_config_file(const char *filename, Config *config) {
             entry->state = DOWNLOAD_PENDING;
             entry->downloaded_size = 0;
             entry->total_size = 0;
-            entry->curl_curl_handle = NULL;
+            entry->curl_handle = NULL;
             entry->file = NULL;
             entry->download_speed = 0.0;
             entry->sha256[0] = '\0';

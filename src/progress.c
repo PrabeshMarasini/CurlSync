@@ -11,7 +11,7 @@ void init_progress_display(void) {
 
 void clear_progress_display(void) {
     for (int i = 0; i < last_line_count; i++) {
-        printf("\033[A\033[K]]");
+        printf("\033[A\033[K");
     }
     last_line_count = 0;
 }
@@ -29,12 +29,13 @@ void format_bytes(size_t bytes, char *buffer, size_t buffer_size) {
     snprintf(buffer, buffer_size, "%.2f %s", size, units[unit_idx]);
 }
 
-void format_speed(double bytes_per_sec, char *buffer. size_t buffer_size) {
-    format_bytes(size_t)bytes_per_sec, buffer, buffer_size;
+void format_speed(double bytes_per_sec, char *buffer, size_t buffer_size) {
+    format_bytes((size_t)bytes_per_sec, buffer, buffer_size);
     strcat(buffer, "/s");
 }
 
 static void draw_progress_bar(double progress, char *buffer, size_t buffer_size) {
+    (void)buffer_size; // Suppress unused parameter warning
     int filled = (int)(progress * PROGRESS_BAR_WIDTH);
     int i;
 
@@ -78,7 +79,7 @@ void update_progress_display(Config *config) {
         }
         filename[sizeof(filename) - 1] = '\0';
 
-        // Turncate filename if it is long
+        // Truncate filename if it is long
         if (strlen(filename) > 20) {
             filename[17] = '.';
             filename[18] = '.';
@@ -96,7 +97,8 @@ void update_progress_display(Config *config) {
 
         char downloaded[32], total[32], speed[32];
         format_bytes(entry->downloaded_size, downloaded, sizeof(downloaded));
-        format_bytes(entry->total_size, total, sizeof(speed));
+        format_bytes(entry->total_size, total, sizeof(total));
+        format_speed(entry->download_speed, speed, sizeof(speed));
 
         const char *state_str = "";
         switch (entry->state) {

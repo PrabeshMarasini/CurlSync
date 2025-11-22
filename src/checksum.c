@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <openssl/sha.h>
+#include <stdbool.h>
 
 int calculate_sha256(const char *filename, char *output_hash) {
     FILE *file = fopen(filename, "rb");
@@ -41,10 +42,16 @@ bool verify_sha256(const char *filename, const char *expected_hash) {
         return true;
     }
 
-    // Comparision for case insensitivity
+    char calculated_hash[SHA256_DIGEST_LENGTH * 2 + 1];
+    if (calculate_sha256(filename, calculated_hash) != 0) {
+        log_error("Failed to calculate checksum for %s", filename);
+        return false;
+    }
+
+    // Comparison for case insensitivity
     for (int i = 0; i < SHA256_DIGEST_LENGTH * 2; i++) {
         char c1 = calculated_hash[i];
-        char c2  =expected_hash[i];
+        char c2 = expected_hash[i];
         if (c1 >= 'A' && c1 <= 'Z') c1 += 32;
         if (c2 >= 'A' && c2 <= 'Z') c2 += 32;
         if (c1 != c2) {
